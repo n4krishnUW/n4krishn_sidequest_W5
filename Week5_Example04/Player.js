@@ -3,6 +3,9 @@ class Player {
     this.x = x;
     this.y = y;
     this.s = speed ?? 3;
+    this.size = 24; // Initial size
+    this.initialSize = 24;
+    this.circlesConsumed = 0;
   }
 
   updateInput() {
@@ -19,9 +22,30 @@ class Player {
     this.y += (dy / len) * this.s;
   }
 
+  consumeCircle(circle) {
+    this.circlesConsumed++;
+    // Grow by a portion of the circle's radius
+    this.size += circle.r * 0.4;
+    // Cap maximum size
+    this.size = min(this.size, this.initialSize * 5);
+  }
+
+  reset(startX, startY) {
+    this.x = startX;
+    this.y = startY;
+    this.size = this.initialSize;
+    this.circlesConsumed = 0;
+  }
+
   draw() {
     fill(50, 110, 255);
     noStroke();
-    rect(this.x - 12, this.y - 12, 24, 24, 5);
+    rect(
+      this.x - this.size / 2,
+      this.y - this.size / 2,
+      this.size,
+      this.size,
+      5,
+    );
   }
 }

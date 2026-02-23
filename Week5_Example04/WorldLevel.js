@@ -11,6 +11,11 @@ class WorldLevel {
 
     // NEW: camera tuning knob from JSON (data-driven)
     this.camLerp = json.camera?.lerp ?? 0.12;
+
+    // Load circles
+    this.circles = (json.circles ?? []).map(
+      (c) => new Circle(c.x, c.y, c.r, c.color),
+    );
   }
 
   drawBackground() {
@@ -29,25 +34,39 @@ class WorldLevel {
     noStroke();
     fill(170, 190, 210);
     for (const o of this.obstacles) rect(o.x, o.y, o.w, o.h, o.r ?? 0);
+
+    // Update and draw circles
+    for (const circle of this.circles) {
+      circle.update();
+      circle.draw();
+    }
+  }
+
+  resetCircles(json) {
+    this.circles = (json.circles ?? []).map(
+      (c) => new Circle(c.x, c.y, c.r, c.color),
+    );
   }
 
   drawHUD(player, camX, camY) {
     noStroke();
     fill(20);
-    text("Example 4 — JSON world + smooth camera (lerp).", 12, 20);
+    text("Example 4 — Circle Collector", 12, 20);
+    text("WASD/Arrows to move • Consume colorful circles to grow!", 12, 40);
     text(
-      "camLerp(JSON): " +
-        this.camLerp +
-        "  Player: " +
-        (player.x | 0) +
-        "," +
-        (player.y | 0) +
-        "  Cam: " +
-        (camX | 0) +
-        "," +
-        (camY | 0),
+      "Size: " +
+        nf(player.size, 0, 1) +
+        " | Circles consumed: " +
+        player.circlesConsumed,
       12,
-      40,
+      60,
+    );
+
+    const activeCircles = this.circles.filter((c) => c.active).length;
+    text(
+      "Circles remaining: " + activeCircles + "/" + this.circles.length,
+      12,
+      80,
     );
   }
 }

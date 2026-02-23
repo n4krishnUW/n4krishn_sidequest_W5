@@ -1,5 +1,5 @@
 /*
-Week 5 — Example 4: Data-driven world with JSON + Smooth Camera
+Week 5 — Example 4: Circle Collector with Growing Player
 
 Course: GBDA302 | Instructors: Dr. Karen Cochrane & David Han
 Date: Feb. 12, 2026
@@ -10,9 +10,9 @@ Learning goals:
 - Extend the JSON-driven world to include camera parameters
 - Implement smooth camera follow using interpolation (lerp)
 - Separate camera behavior from player/world logic
-- Tune motion and feel using external data instead of hard-coded values
-- Maintain player visibility with soft camera clamping
-- Explore how small math changes affect “game feel”
+- Consume colorful circles to grow the player
+- Reset game when player touches world edges
+- Dynamic collision detection and object consumption
 */
 
 const VIEW_W = 800;
@@ -46,9 +46,24 @@ function setup() {
 function draw() {
   player.updateInput();
 
-  // Keep player inside world
-  player.x = constrain(player.x, 0, level.w);
-  player.y = constrain(player.y, 0, level.h);
+  // Check if player touches world edges (reset game)
+  if (
+    player.x <= 0 ||
+    player.x >= level.w ||
+    player.y <= 0 ||
+    player.y >= level.h
+  ) {
+    resetGame();
+    return;
+  }
+
+  // Check circle collisions
+  for (const circle of level.circles) {
+    if (circle.touchesPlayer(player)) {
+      player.consumeCircle(circle);
+      circle.consume();
+    }
+  }
 
   // Target camera (center on player)
   let targetX = player.x - width / 2;
@@ -76,9 +91,16 @@ function draw() {
   level.drawHUD(player, camX, camY);
 }
 
+function resetGame() {
+  const start = worldData.playerStart ?? { x: 300, y: 300, speed: 3 };
+  player.reset(start.x, start.y);
+  level.resetCircles(worldData);
+  camX = player.x - width / 2;
+  camY = player.y - height / 2;
+}
+
 function keyPressed() {
   if (key === "r" || key === "R") {
-    const start = worldData.playerStart ?? { x: 300, y: 300, speed: 3 };
-    player = new Player(start.x, start.y, start.speed);
+    resetGame();
   }
 }

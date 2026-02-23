@@ -12,7 +12,7 @@ Naveena Krishnabagavan
 
 ## Description
 
-Based on example 4, creates and positions the player and obstacles using preloads and loadJSON files. Once the level is complete a new level with a different grid and dyanmically placed obstacles loads.
+Based on example 5, creates and positions the player and obstacles using preloads and loadJSON files. Once the level is complete a new level with a different grid and dyanmically placed obstacles loads.
 
 ---
 
